@@ -26,7 +26,7 @@ class _BaseFFT(nn.Module):
 
             assert len(self.size) == len(self.dim)
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return self._fft(x, s=self.size, dim=self.dim, norm=self.norm)
 
 

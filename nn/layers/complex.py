@@ -11,7 +11,7 @@ class FromComplex(nn.Module):
 
         self.dim = dim
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return torch.stack([x.real, x.imag], dim=self.dim)
 
 
@@ -21,7 +21,7 @@ class ToComplex(nn.Module):
 
         self.dim = dim
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         x_real, x_imag = torch.unbind(x, dim=self.dim)
 
         return torch.complex(x_real, x_imag)
