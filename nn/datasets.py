@@ -5,6 +5,7 @@ from multiprocessing.pool import ThreadPool
 
 from PIL import Image
 
+import math
 import numpy as np
 import torch
 
@@ -37,7 +38,7 @@ class Images:
         if w < self.width or h < self.height:
             ratio = max(self.width / w, self.height / h)
 
-            w, h = int(w * ratio), int(h * ratio)
+            w, h = math.ceil(w * ratio), math.ceil(h * ratio)
             img = img.resize((w, h), Image.BICUBIC)
 
         # random crop to width/height
