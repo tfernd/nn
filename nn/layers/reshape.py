@@ -10,5 +10,5 @@ class Reshape(nn.Module):
 
         self.shape = shape
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return x.reshape(*self.shape)

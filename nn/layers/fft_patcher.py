@@ -19,7 +19,6 @@ class _FFTPatcherBase(nn.Module):
         num_channels: int,
         compression: int | float = 1.0,
         kernel_size: int | tuple[int, int] = 1,
-        *,
         scale: float = 0.0,
     ):
         super().__init__()

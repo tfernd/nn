@@ -20,7 +20,6 @@ class FFTPatchAutoEncoder(pl.LightningModule):
 
     def __init__(
         self,
-        *,
         height: int,
         width: int,
         num_channels: int,
@@ -49,7 +48,6 @@ class FFTPatchAutoEncoder(pl.LightningModule):
 
     def add_latent_mixer(
         self,
-        *,
         kernel_size: int = 1,
         expand: int = 4,
         num_layers: int = 1,
@@ -63,7 +61,6 @@ class FFTPatchAutoEncoder(pl.LightningModule):
 
     def add_mixer(
         self,
-        *,
         patch_size: int,
         kernel_size: int = 1,
         expand: int = 4,
@@ -85,7 +82,7 @@ class FFTPatchAutoEncoder(pl.LightningModule):
             ]
         )
 
-    def forward(self, img: Tensor, /) -> tuple[Tensor, Tensor, Tensor]:
+    def forward(self, img: Tensor) -> tuple[Tensor, Tensor, Tensor]:
         batch, channels, height, width = img.shape
         assert img.dtype == torch.uint8
 
@@ -100,7 +97,7 @@ class FFTPatchAutoEncoder(pl.LightningModule):
 
         return out, z, loss
 
-    def training_step(self, batch: Tensor, batch_idx: int, /) -> Tensor:
+    def training_step(self, batch: Tensor, batch_idx: int) -> Tensor:
         out, z, loss = self.forward(batch)
 
         self.log("train_loss", loss)

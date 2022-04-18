@@ -13,8 +13,6 @@ class Images:
     def __init__(
         self,
         root: str | Path,
-        /,
-        *,
         width: int,
         height: int,
         suffix: str = ".jpg",
@@ -28,7 +26,7 @@ class Images:
     def __len__(self):
         return len(self.imgs)
 
-    def __getitem__(self, idx: int, /):
+    def __getitem__(self, idx: int):
         assert 0 <= idx < len(self)
 
         path = self.imgs[idx]
@@ -61,7 +59,7 @@ class Images:
 
         return data
 
-    def batch(self, batch_size: int = 1, steps: int = 1, *, processes: int = 8):
+    def batch(self, batch_size: int = 1, steps: int = 1, processes: int = 8):
         if processes > batch_size:
             processes = batch_size
 

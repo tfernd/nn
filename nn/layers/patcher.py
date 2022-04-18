@@ -15,7 +15,7 @@ class _Patcher(nn.Module):
         self.height = height
         self.width = width
 
-    def patchfy(self, x: Tensor, /) -> Tensor:
+    def patchfy(self, x: Tensor) -> Tensor:
         """(N, C, H, W) -> (N, C, ph, pw, H//ph, W//pw)"""
 
         assert x.ndim == 4, "Input must be 4D"
@@ -29,7 +29,7 @@ class _Patcher(nn.Module):
 
         return x
 
-    def unpatchfy(self, x: Tensor, /) -> Tensor:
+    def unpatchfy(self, x: Tensor) -> Tensor:
         """(N, C, ph, pw, H//ph, W//pw) -> (N, C, H, W)"""
 
         assert x.ndim == 6, "Input must be 6D"
@@ -48,10 +48,10 @@ class _Patcher(nn.Module):
 
 
 class Patchfy(_Patcher):
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return self.patchfy(x)
 
 
 class Unpatchfy(_Patcher):
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return self.unpatchfy(x)

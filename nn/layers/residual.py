@@ -12,5 +12,5 @@ class Residual(nn.Sequential):
 
         self.scale = Parameter(torch.tensor(scale))
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return x + self.scale * super().forward(x)

@@ -10,5 +10,5 @@ class Permute(nn.Module):
 
         self.dims = dims
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         return x.permute(*self.dims)
