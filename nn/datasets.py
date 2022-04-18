@@ -41,6 +41,10 @@ class Images:
             w, h = math.ceil(w * ratio), math.ceil(h * ratio)
             img = img.resize((w, h), Image.BICUBIC)
 
+        assert (
+            w >= self.width and h >= self.height
+        ), f"{w}x{h} < {self.width}x{self.height}"
+
         # random crop to width/height
         i = np.random.randint(0, w - self.width) if w != self.width else 0
         j = np.random.randint(0, h - self.height) if h != self.height else 0
