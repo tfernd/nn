@@ -53,7 +53,7 @@ class _FFTPatcherBase(nn.Module):
         kh = torch.fft.fftfreq(height)
         kw = torch.fft.fftfreq(width)[: width // 2 + 1]
 
-        Kh, Kw = torch.meshgrid(kh, kw, indexing="ij")
+        Kh, Kw = torch.meshgrid(kh, kw)
         K = torch.sqrt(Kh**2 + Kw**2)
 
         # make into shape (C, ph, pw//2+1, 2)
