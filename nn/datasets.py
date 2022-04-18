@@ -40,22 +40,14 @@ class Images:
             w, h = int(w * ratio), int(h * ratio)
             img = img.resize((w, h), Image.BICUBIC)
 
-        count = 0
-        while True:
-            count += 1
+        # random crop to width/height
+        i = np.random.randint(0, w - self.width) if w != self.width else 0
+        j = np.random.randint(0, h - self.height) if h != self.height else 0
 
-            # random crop to width/height
-            i = np.random.randint(0, w - self.width + 1)
-            j = np.random.randint(0, h - self.height + 1)
+        crop = img.crop((i, j, i + self.width, j + self.height))
 
-            crop = img.crop((i, j, i + self.width, j + self.height))
-
-            data = torch.from_numpy(np.asarray(crop))
-            data = data.permute(2, 0, 1)  # (C, H, W)
-
-            # TODO avoid hard-coded numbers
-            if data.div(255).std() >= 0.1 or count >= 10:
-                break
+        data = torch.from_numpy(np.asarray(crop))
+        data = data.permute(2, 0, 1)  # (C, H, W)
 
         return data
 
