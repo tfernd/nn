@@ -105,7 +105,7 @@ class FFTPatchEncoder(_FFTPatcherBase):
             scale=self.scale,
         )
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         x = self.patchfy(x)
         x = self.rfft(x)
         x = self.from_complex(x)
@@ -141,7 +141,7 @@ class FFTPatchDecoder(_FFTPatcherBase):
             scale=self.scale,
         )
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         x = self.conv(x)
         x = self.unflatten(x)
         x = self.to_complex(x)
