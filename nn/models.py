@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 
 import numpy as np
 
@@ -13,6 +12,8 @@ from .layers import FFTPatchEncoder
 from .layers import Patchfy, Unpatchfy
 from .layers import Residual
 from .layers import ConvBlock
+
+from .losses import VGGPerceptualLoss
 
 
 class FFTPatchAutoEncoder(pl.LightningModule):
@@ -45,6 +46,8 @@ class FFTPatchAutoEncoder(pl.LightningModule):
 
         self.latent_mixer = nn.Identity()
         self.mixer = nn.Identity()
+
+        self.vgg_loss = VGGPerceptualLoss()
 
     def add_latent_mixer(
         self,
@@ -91,7 +94,8 @@ class FFTPatchAutoEncoder(pl.LightningModule):
         z = self.latent_mixer(self.encoder(x))
         out = self.mixer(self.decoder(z)).clip(0, 1)
 
-        loss = out.sub(x).pow(2).mean()
+        # loss = out.sub(x).pow(2).mean()
+        loss = self.vgg_loss(x, out)
 
         out = out.detach().mul(255)
 
