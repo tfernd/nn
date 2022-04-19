@@ -20,11 +20,6 @@ class ConvBlock(nn.Sequential):
             ),
             nn.GELU(),
             nn.BatchNorm2d(in_channels * expand),
-            nn.Conv2d(
-                in_channels * expand,
-                in_channels,
-                kernel_size,
-                padding=kernel_size // 2,
-            ),
+            nn.Conv2d(in_channels * expand, in_channels, kernel_size=1),
         ]
         super().__init__(*layers)

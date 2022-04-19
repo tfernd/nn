@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Literal
 
 import torch
 import torch.nn as nn
@@ -13,8 +13,7 @@ class _BaseFFT(nn.Module):
         self,
         dim: int | tuple[int, ...] = -1,
         size: Optional[int | tuple[int, ...]] = None,
-        norm: str = "backward",
-        # norm: Literal["forward", "backward", "ortho"] = "backward",
+        norm: Literal["forward", "backward", "ortho"] = "backward",
     ):
         super().__init__()
 

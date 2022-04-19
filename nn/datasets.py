@@ -16,6 +16,7 @@ class Images:
         root: str | Path,
         width: int,
         height: int,
+        *,
         suffix: str = ".jpg",
     ):
         self.width = width

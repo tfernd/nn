@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 
 import numpy as np
 
@@ -105,8 +106,16 @@ class FFTPatchEncoder(_FFTPatcherBase):
             scale=self.scale,
         )
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor, mask: Optional[Tensor] = None) -> Tensor:
         x = self.patchfy(x)
+        if mask is not None:
+            assert mask.ndim == 3
+            N, h, w = mask.shape
+            C, H, W = x.shape[1:4]
+            mask = mask.view(N, 1, 1, 1, h, w)
+            mask = mask.tile(1, C, H, W, 1, 1)
+
+            x = x.masked_fill(mask, 0)
         x = self.rfft(x)
         x = self.from_complex(x)
         x = self.flatten(x)

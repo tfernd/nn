@@ -5,6 +5,7 @@ import torch.nn as nn
 from torch import Tensor
 
 
+# TODO make 1d version
 class _Patcher(nn.Module):
     def __init__(self, height: int, width: Optional[int] = None):
         super().__init__()

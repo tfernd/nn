@@ -1,9 +1,11 @@
 from __future__ import annotations
+from typing import Optional
 
 import numpy as np
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import Tensor
 
 import pytorch_lightning as pl
@@ -12,8 +14,6 @@ from .layers import FFTPatchEncoder
 from .layers import Patchfy, Unpatchfy
 from .layers import Residual
 from .layers import ConvBlock
-
-from .losses import VGGPerceptualLoss
 
 
 class FFTPatchAutoEncoder(pl.LightningModule):
@@ -26,6 +26,7 @@ class FFTPatchAutoEncoder(pl.LightningModule):
         num_channels: int,
         compression: int | float,
         kernel_size: int | tuple[int, int] = 1,
+        mask_prob: float = 0.0,
     ):
         super().__init__()
 
@@ -35,6 +36,7 @@ class FFTPatchAutoEncoder(pl.LightningModule):
         self.num_channels = num_channels
         self.compression = compression
         self.kernel_size = kernel_size
+        self.mask_prob = mask_prob
 
         # layers
         self.encoder = FFTPatchEncoder(
@@ -46,8 +48,6 @@ class FFTPatchAutoEncoder(pl.LightningModule):
 
         self.latent_mixer = nn.Identity()
         self.mixer = nn.Identity()
-
-        self.vgg_loss = VGGPerceptualLoss()
 
     def add_latent_mixer(
         self,
@@ -85,24 +85,34 @@ class FFTPatchAutoEncoder(pl.LightningModule):
             ]
         )
 
-    def forward(self, img: Tensor) -> tuple[Tensor, Tensor, Tensor]:
+    def forward(
+        self, img: Tensor, mask: Optional[Tensor] = None
+    ) -> tuple[Tensor, Tensor, Tensor]:
         batch, channels, height, width = img.shape
         assert img.dtype == torch.uint8
 
-        x = out = img.div(255)  # normalize to [0, 1]
+        x = img.div(255)  # normalize to [0, 1]
 
-        z = self.latent_mixer(self.encoder(x))
+        z = self.latent_mixer(self.encoder(x, mask=mask))
         out = self.mixer(self.decoder(z)).clip(0, 1)
 
-        # loss = out.sub(x).pow(2).mean()
-        loss = self.vgg_loss(x, out)
+        loss = F.mse_loss(out, x)
 
         out = out.detach().mul(255)
 
         return out, z, loss
 
+    def random_mask(self, x: Tensor) -> Tensor:
+        N, C, H, W = x.shape
+
+        mask = torch.rand(N, H // self.height, W // self.width, device=self.device)
+        mask = mask <= self.mask_prob
+
+        return mask
+
     def training_step(self, batch: Tensor, batch_idx: int) -> Tensor:
-        out, z, loss = self.forward(batch)
+        mask = self.random_mask(batch) if self.mask_prob > 0 else None
+        out, z, loss = self.forward(batch, mask=mask)
 
         self.log("train_loss", loss)
 
