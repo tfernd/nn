@@ -1,63 +1,55 @@
 #%%
 from __future__ import annotations
 
-# %load_ext autoreload
-# %autoreload 2
+%load_ext autoreload
+%autoreload 2
 
-from pathlib import Path
+import torch
 
 from PIL import Image
 from matplotlib import pyplot as plt
 
-import numpy as np
-
-import torch
-from torch import Tensor
-
 from tqdm.notebook import tqdm
 
-from src.datasets import ImageDataset
-from src.models import FFTPatchSuperResolution
+from src.models import FFTPatch
 from src.utils import num_parameters
+from src.datasets import ImageDataset
 
-model = FFTPatchSuperResolution(
-    patch=4,
-    scale=4,
-    kernel_size=3,
-    expand=2,
-    num_layers=2,
-).cuda()
-print(f"Parameters: {num_parameters(model):,}")
+torch.cuda.empty_cache()
 
-#%%
-ds = ImageDataset(
-    r"C:\\Users\\thale\\#Code\\db\\pics",
-    # r"C:\\Users\\thale\\#DCIM\\Camera",
-    size=512,
-    scale=4,
-)
+# ds = ImageDataset(r'C:\\Users\\thale\\#aDCIM\\Camera', size=256)
+ds = ImageDataset(r'.database', size=128)
 
-#%% training
-steps = 1_000
+model = FFTPatch(size=8, emb_size=128, expand=2, num_layers=1)
+model.cuda()
+print(f"Number of parameters: {num_parameters(model):,}")
+
+
+#%% train
 model.configure_optimizers(lr=1e-4)
-dl = ds.batch(16, steps)
-with tqdm(dl) as pbar:
-    for i, batch in enumerate(pbar):
-        try:
-            loss = model.training_step(batch, i)
 
-            pbar.set_postfix(loss=loss)
-        except KeyboardInterrupt:
-            break
+steps=1000
+with tqdm(total=steps)as pbar:
+    for i, data in enumerate(ds.batch(batch_size=4, steps=steps)):
+        mask = model.random_mask(data, prob=0.0)
+
+        batch = (data, mask)
+        loss = model.train_step(batch, i)
+
+        pbar.set_postfix(loss=loss)
+        pbar.update()
 
 #%%
 plt.plot(model.log)
 
 #%%
 model.eval()
-dl = ds.batch(1, steps)
-data, target = next(dl)
-out = model(data).detach()
-d = out[0].permute(1, 2, 0).to(torch.uint8).cpu().numpy()
+data = next(ds.batch(1, steps))
+mask = model.random_mask(data, prob=0.0)
+logits, mean, std = model.forward(data, mask)
+
+d = mean[0].long().to(torch.uint8).cpu().numpy()
+d = logits[0].argmax(-1).long().to(torch.uint8).cpu().numpy()
 
 Image.fromarray(d)
+
