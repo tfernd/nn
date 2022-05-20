@@ -48,7 +48,7 @@ class ImageDataset:
             img = self.crop(img)
         data = img2tensor(img)
 
-        return data
+        return data.permute(2, 0, 1)
 
     def batch(self, *, batch_size: int = 1, steps: int = 1, processes: int = 8):
         with ThreadPool(processes) as pool:

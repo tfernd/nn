@@ -29,4 +29,4 @@ class Base(nn.Module):
         return self.to("cpu")
 
     def configure_optimizers(self, *, lr: float):
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=lr)
+        self.optimizer = torch.optim.Adamax(self.parameters(), lr=lr)

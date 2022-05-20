@@ -1,1 +1,1 @@
-from .patch_fft import FFTPatch
+from .fft_model import FFTModel
