@@ -26,7 +26,7 @@ class MaskLatent(nn.Module):
         masks = ~torch.eye(features).cumsum(0).bool()
         self.register_buffer("masks", masks)
 
-    def mask(self, z: Tensor, /) -> tuple[Tensor, Optional[Tensor]]:
+    def mask(self, z: Tensor) -> tuple[Tensor, Optional[Tensor]]:
         if not self.training:
             return z, None
 
@@ -51,7 +51,7 @@ class MaskLatent(nn.Module):
 
         return z[..., :n]
 
-    def expand(self, z: Tensor, /) -> Tensor:
+    def expand(self, z: Tensor) -> Tensor:
         *shape, C = z.shape
 
         if C == self.features:
