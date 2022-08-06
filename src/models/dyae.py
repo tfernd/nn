@@ -33,7 +33,7 @@ class DynamicAutoEncoder(pl.LightningModule):
         # parameters
         self.save_hyperparameters()
 
-        self.name = f'DyAE_{features}_{ratio}_{num_layers}'
+        self.name = f"DyAE_{features}_{ratio}_{num_layers}"
 
         ne, nd = (num_layers, num_layers) if isinstance(num_layers, int) else num_layers
         self.num_layers = num_layers = (ne, nd)
@@ -72,7 +72,7 @@ class DynamicAutoEncoder(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.lr)
 
-    def loss(self, data: Tensor, out: Tensor, /) -> Tensor:
+    def loss(self, data: Tensor, out: Tensor) -> Tensor:
         data = data.to(self.device)
         out = out.to(self.device)
 
