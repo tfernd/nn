@@ -41,7 +41,6 @@ class MaskLatent(nn.Module):
     def crop(
         self,
         z: Tensor,
-        /,
         n: Optional[int] = None,
     ) -> Tensor:
         if n is None:
