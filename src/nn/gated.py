@@ -49,7 +49,7 @@ class Gated(nn.Module):
             else nn.Identity()
         )
 
-    def forward(self, x: Tensor, /) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         # normalize
         xn = x * self.scale + self.shift
 
